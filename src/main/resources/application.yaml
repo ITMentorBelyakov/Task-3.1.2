@@ -26,4 +26,9 @@ spring:
         suffix: .html
         encoding: UTF-8
         cache: false
+
+    sql:
+        init:
+            mode: always
+            data-locations: classpath:data.sql
 #spring.jpa.hibernate.ddl-auto=create  spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect

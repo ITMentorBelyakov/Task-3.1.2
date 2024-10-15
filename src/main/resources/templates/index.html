@@ -1,84 +1,16 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
-    <title>Список пользователей</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f4f8;
-            color: #333;
-        }
-        h1 {
-            text-align: center;
-            color: #4A90E2;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        th {
-            background-color: #f8f9fa;
-        }
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-        .create-btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #4A90E2;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-        .create-btn:hover {
-            background-color: #357ABD;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <title>Главная страница</title>
 </head>
 <body>
-<div class="container">
-    <h1>Список пользователей</h1>
-    <table>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Имя</th>
-            <th>Фамилия</th>
-            <th>Email</th>
-            <th>Пароль</th>
-            <th>Возраст</th>
-            <th>Действия</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="user : ${users}">
-            <td th:text="${user.id}"></td>
-            <td th:text="${user.firstName}"></td>
-            <td th:text="${user.secondName}"></td>
-            <td th:text="${user.email}"></td>
-            <td th:text="${user.password}"></td>
-            <td th:text="${user.age}"></td>
-            <td>
-                <form th:action="@{/update/{id}(id=${user.id})}" th:method="get" style="display:inline;">
-                    <button type="submit">Редактировать</button>
-                </form>
-                <form th:action="@{/delete/{id}(id=${user.id})}" th:method="delete" style="display:inline;">
-                    <button type="submit">Удалить</button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <a href="/new" class="create-btn">Создать нового пользователя</a>
-</div>
+<h1>Добро пожаловать в систему управления пользователями</h1>
+<p>Выберите действие:</p>
+<ul>
+    <li><a th:href="@{/login}">Войти в систему</a></li>
+    <li><a th:href="@{/admin/users}">Управление пользователями (только для администраторов)</a></li>
+    <li><a th:href="@{/user}">Личный кабинет пользователя</a></li>
+</ul>
 </body>
 </html>

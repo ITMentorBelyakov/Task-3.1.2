@@ -3,6 +3,7 @@ package ru.itmentor.spring.boot_security.demo.repository;
 import ru.itmentor.spring.boot_security.demo.models.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DAO {
 
@@ -16,5 +17,5 @@ public interface DAO {
 
     void deleteUser(Long id);
 
-    User load
+    Optional<User> findByUsername(String username);
 }

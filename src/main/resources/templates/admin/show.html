@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Информация о пользователе</title>
+</head>
+<body>
+<h1>Информация о пользователе</h1>
+<p><strong>ID:</strong> <span th:text="${user.id}"></span></p>
+<p><strong>Имя пользователя:</strong> <span th:text="${user.username}"></span></p>
+<p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+<p><strong>Имя:</strong> <span th:text="${user.firstName}"></span></p>
+<p><strong>Фамилия:</strong> <span th:text="${user.secondName}"></span></p>
+<p><strong>Возраст:</strong> <span th:text="${user.age}"></span></p>
+
+<a th:href="@{/admin/users/{id}/edit(id=${user.id})}">Редактировать</a>
+<br>
+<a th:href="@{/admin/users}">Назад к списку пользователей</a>
+<a th:href="@{/logout}">Выйти</a>
+</body>
+</html>

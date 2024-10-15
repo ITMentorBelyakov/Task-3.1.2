@@ -2,6 +2,7 @@ package ru.itmentor.spring.boot_security.demo.servise;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.itmentor.spring.boot_security.demo.models.User;
@@ -46,5 +47,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         userDAO.deleteUser(id);
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        return userDAO.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден: " + username));
     }
 }
