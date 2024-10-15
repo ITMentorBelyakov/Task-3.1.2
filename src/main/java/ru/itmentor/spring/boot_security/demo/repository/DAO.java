@@ -15,4 +15,6 @@ public interface DAO {
     void updateUser(User user);
 
     void deleteUser(Long id);
+
+    User load
 }
