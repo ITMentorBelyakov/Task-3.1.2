@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.itmentor.spring.boot_security.demo.models.User;
-import ru.itmentor.spring.boot_security.demo.servise.UserService;
+import ru.itmentor.spring.boot_security.demo.service.UserService;
 
 @Controller
 @RequestMapping("/user")

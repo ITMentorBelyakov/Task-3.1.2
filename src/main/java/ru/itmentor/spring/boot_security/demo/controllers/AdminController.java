@@ -4,20 +4,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.itmentor.spring.boot_security.demo.models.Role;
 import ru.itmentor.spring.boot_security.demo.models.User;
-import ru.itmentor.spring.boot_security.demo.servise.UserService;
+import ru.itmentor.spring.boot_security.demo.service.RoleService;
+import ru.itmentor.spring.boot_security.demo.service.UserService;
 
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
 
     private final UserService userService;
+    private final RoleService roleService;
 
     @Autowired
-    public AdminController(UserService userService) {
+    public AdminController(UserService userService,  RoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     @GetMapping({"/users", "/user"})
@@ -37,11 +42,13 @@ public class AdminController {
     @GetMapping("/users/new")
     public String showNewUserForm(Model model) {
         model.addAttribute("user", new User());
+        model.addAttribute("allRoles", roleService.getAllRoles());
         return "admin/new";
     }
 
     @PostMapping("/users")
-    public String createUser(@ModelAttribute("user") User user) {
+    public String createUser(@ModelAttribute("user") User user, @RequestParam("roles") Set<Role> roles) {
+        user.setRoles(roles);
         userService.saveUser(user);
         return "redirect:/admin/users";
     }
