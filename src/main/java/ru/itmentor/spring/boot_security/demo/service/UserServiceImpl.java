@@ -44,17 +44,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User saveUser(User user) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-        if (user.getRoles() == null || user.getRoles().isEmpty()) {
-            Role defaultRole = roleService.findByName("ROLE_USER");
-            user.setRoles(Collections.singleton(defaultRole));
-        } else {
-            Set<Role> actualRoles = new HashSet<>();
-            for (Role requestRole : user.getRoles()) {
-                Role actualRole = roleService.findByName(requestRole.getName());
-                actualRoles.add(actualRole);
-            }
-            user.setRoles(actualRoles);
-        }
         return userRepository.save(user);
     }
 

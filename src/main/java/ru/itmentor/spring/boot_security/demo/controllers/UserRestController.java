@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import ru.itmentor.spring.boot_security.demo.models.User;
 import ru.itmentor.spring.boot_security.demo.service.UserService;
@@ -12,7 +11,6 @@ import ru.itmentor.spring.boot_security.demo.service.UserService;
 @RestController
 @RequestMapping("/api/user")
 public class UserRestController {
-
     private final UserService userService;
 
     @Autowired
