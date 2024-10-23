@@ -1,6 +1,5 @@
 package ru.itmentor.spring.boot_security.demo.service;
 
-
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,7 +11,9 @@ import ru.itmentor.spring.boot_security.demo.models.User;
 import ru.itmentor.spring.boot_security.demo.repository.UserRepository;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -42,15 +43,19 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User saveUser(User user) {
-        try {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            Role userRole = roleService.findByName("ROLE_USER");
-            user.setRoles(Collections.singleton(userRole));
-            User savedUser = userRepository.save(user);
-            return savedUser;
-        } catch (Exception e) {
-            throw e;
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+            Role defaultRole = roleService.findByName("ROLE_USER");
+            user.setRoles(Collections.singleton(defaultRole));
+        } else {
+            Set<Role> actualRoles = new HashSet<>();
+            for (Role requestRole : user.getRoles()) {
+                Role actualRole = roleService.findByName(requestRole.getName());
+                actualRoles.add(actualRole);
+            }
+            user.setRoles(actualRoles);
         }
+        return userRepository.save(user);
     }
 
     @Override

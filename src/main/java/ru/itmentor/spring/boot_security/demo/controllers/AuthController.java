@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itmentor.spring.boot_security.demo.models.User;
+import ru.itmentor.spring.boot_security.demo.security.LoginRequest;
 import ru.itmentor.spring.boot_security.demo.service.UserService;
 
 import java.util.Base64;
@@ -30,7 +31,7 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @PostMapping("/login")
+    @PostMapping()
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -38,10 +39,7 @@ public class AuthController {
                         loginRequest.getPassword()
                 )
         );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
         User user = userService.findByUsername(loginRequest.getUsername());
-
         String token = Base64.getEncoder().encodeToString(
                 (user.getUsername() + ":" + System.currentTimeMillis()).getBytes()
         );
@@ -55,26 +53,5 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header("Authorization", "Bearer " + token)
                 .body(response);
-    }
-
-    static class LoginRequest {
-        private String username;
-        private String password;
-
-        public String getUsername() {
-            return username;
-        }
-
-        public void setUsername(String username) {
-            this.username = username;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
     }
 }
