@@ -1,75 +1,65 @@
 package ru.itmentor.spring.boot_security.demo.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import ru.itmentor.spring.boot_security.demo.models.Role;
 import ru.itmentor.spring.boot_security.demo.models.User;
 import ru.itmentor.spring.boot_security.demo.service.RoleService;
 import ru.itmentor.spring.boot_security.demo.service.UserService;
 
 import java.util.List;
-import java.util.Set;
 
-@Controller
-@RequestMapping("/admin")
+@RestController
+@RequestMapping("/api/admin")
 public class AdminController {
 
     private final UserService userService;
     private final RoleService roleService;
 
     @Autowired
-    public AdminController(UserService userService,  RoleService roleService) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
     }
 
-    @GetMapping({"/users", "/user"})
-    public String showAllUsers(Model model) {
-        List<User> users = userService.showAllUsers();
-        model.addAttribute("users", users);
-        return "admin/index";
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("/users/{id}")
-    public String showUserById(@PathVariable Long id, Model model) {
-        User user = userService.showUserForId(id);
-        model.addAttribute("user", user);
-        return "admin/show";
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        try {
+            User user = userService.getUserById(id);
+            return ResponseEntity.ok(user);
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @GetMapping("/users/new")
-    public String showNewUserForm(Model model) {
-        model.addAttribute("user", new User());
-        model.addAttribute("allRoles", roleService.getAllRoles());
-        return "admin/new";
+    @PostMapping("/create")
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        User savedUser = userService.saveUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
-    @PostMapping("/users")
-    public String createUser(@ModelAttribute("user") User user, @RequestParam("roles") Set<Role> roles) {
-        user.setRoles(roles);
-        userService.saveUser(user);
-        return "redirect:/admin/users";
+    @PutMapping()
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
+        User updatedUser = userService.updateUser(user);
+        return ResponseEntity.ok(updatedUser);
     }
 
-    @GetMapping("/users/{id}/edit")
-    public String showEditForm(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("user", userService.showUserForId(id));
-        return "admin/update";
-    }
-
-    @PostMapping("/users/{id}")
-    public String updateUser(@PathVariable("id") Long id, @ModelAttribute User user) {
-        user.setId(id);
-        userService.updateUser(user);
-        return "redirect:/admin/users";
-    }
-
-    @PostMapping("/users/{id}/delete")
-    public String deleteUser(@PathVariable("id") Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-        return "redirect:/admin/users";
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/by-username/{username}")
+    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+        User user = userService.findByUsername(username);
+        return ResponseEntity.ok(user);
     }
 }
-

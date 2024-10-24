@@ -1,65 +1,73 @@
 package ru.itmentor.spring.boot_security.demo.service;
 
-
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.itmentor.spring.boot_security.demo.models.Role;
 import ru.itmentor.spring.boot_security.demo.models.User;
-import ru.itmentor.spring.boot_security.demo.repository.DAO;
+import ru.itmentor.spring.boot_security.demo.repository.UserRepository;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
-@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
-    private final DAO userDAO;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RoleService roleService;
 
     @Autowired
-    public UserServiceImpl(DAO userDAO, PasswordEncoder passwordEncoder) {
-        this.userDAO = userDAO;
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleService roleService) {
+        this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roleService = roleService;
     }
 
     @Override
-    public List<User> showAllUsers() {
-        return userDAO.showAllUsers();
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     @Override
-    public User showUserForId(Long id) {
-        return userDAO.showUserForId(id);
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + id));
     }
 
     @Override
     @Transactional
-    public void saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userDAO.saveUser(user);
+    public User saveUser(User user) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
     }
 
-    @Transactional
     @Override
-    public void updateUser(User user) {
-        User existingUser = userDAO.showUserForId(user.getId());
+    @Transactional
+    public User updateUser(User user) {
+        User existingUser = getUserById(user.getId());
         if (!user.getPassword().equals(existingUser.getPassword())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-        userDAO.updateUser(user);
+        return userRepository.save(user);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void deleteUser(Long id) {
-        userDAO.deleteUser(id);
+        userRepository.deleteById(id);
     }
 
     @Override
     public User findByUsername(String username) {
-        return userDAO.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден: " + username));
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        Hibernate.initialize(user.getRoles());
+        return user;
     }
 }
